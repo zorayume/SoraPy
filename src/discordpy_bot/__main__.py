@@ -1,13 +1,10 @@
-import discord
-
-from discordpy_bot.bot import MyClient
+from discordpy_bot.bot import SoraPy
 from discordpy_bot.config import DISCORD_TOKEN
 
-def main() -> None:
-    intents = discord.Intents.default()
-    intents.message_content = True
-    client = MyClient(intents=intents)
+def main():
+    client = SoraPy()
     client.run(DISCORD_TOKEN)
 
-# Run main func
-main()
+# Run
+if __name__ == "__main__":
+    main()
