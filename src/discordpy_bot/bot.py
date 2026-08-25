@@ -1,10 +1,8 @@
 import discord
 from pathlib import Path
-from discord.ext import commands
-
+from discord.ext import commands, tasks
 
 class SoraPy(commands.Bot):
-
     def __init__(self):
         intents = discord.Intents.default()
         intents.message_content=True
@@ -18,6 +16,23 @@ class SoraPy(commands.Bot):
     async def on_ready(self):
         print("Bot is Logged on as", self.user)
         print("Commands:", [command.name for command in self.commands])
+
+        if not self.update_status.is_running():
+            self.update_status.start()
+
+    @tasks.loop(minutes=3)
+    async def update_status(self):
+        member_count = sum(guild.member_count or 0 for guild in self.guilds)
+        guild_count = len(self.guilds)
+        status = [
+            discord.Activity(type=discord.ActivityType.listening, name="A widely sea song"),
+            discord.Activity(type=discord.ActivityType.watching, name=f"For {member_count} Members"),
+            discord.Activity(type=discord.ActivityType.watching, name=f"For {guild_count} Servers")
+        ]
+
+        activity = status[self.update_status.current_loop % len(status)] 
+        await self.change_presence(activity=activity)
+
 
     async def setup_hook(self):
         cogs_path = Path(__file__).parent / "cogs"
