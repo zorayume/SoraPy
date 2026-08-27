@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-import time
 
 class Info(commands.Cog):
     def __init__(self, client):
@@ -10,8 +9,6 @@ class Info(commands.Cog):
     async def info(self, ctx):
         if ctx.guild is None:
             return await ctx.send("This command can be only used in servers")
-
-        start = time.time()
         
         guild = ctx.guild
 
@@ -27,10 +24,7 @@ class Info(commands.Cog):
         embed.add_field(name="Server Owner", value=server_owner, inline=True)
         embed.add_field(name="Created At", value=server_created_at, inline=True)
 
-        time.sleep(1)
-        end = time.time()
-
-        embed.set_footer(text=f"Speed: {end - start}")
+        embed.set_footer(text=f"Run by {ctx.author.name}")
 
         await ctx.send(embed=embed)
 
