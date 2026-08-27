@@ -1,6 +1,7 @@
 import discord
 from pathlib import Path
 from discord.ext import commands, tasks
+from colorama import Fore, Back, Style
 
 class SoraPy(commands.Bot):
     def __init__(self):
@@ -14,8 +15,10 @@ class SoraPy(commands.Bot):
         )
 
     async def on_ready(self):
-        print("Bot is Logged on as", self.user)
-        print("Commands:", [command.name for command in self.commands])
+        command_list = ", ".join([command.name for command in self.commands])
+
+        print(Fore.GREEN + f"[INFO] Bot is Logged on as {self.user}" + Style.RESET_ALL)
+        print(Fore.GREEN + f"[INFO] Loaded {command_list}", Style.RESET_ALL)
 
         if not self.update_status.is_running():
             self.update_status.start()
@@ -46,12 +49,12 @@ class SoraPy(commands.Bot):
             # An example utility/info.py => utility/info
             module = relative.with_suffix("") # remove the suffix (extension)
 
-            extensions = "discordpy_bot.cogs." + ".".join(module.parts)
+            extensions = "sorapy_bot.cogs." + ".".join(module.parts)
 
             try:
                 await self.load_extension(extensions)
-                print(f"Loaded: {extensions}")
+                print(Fore.GREEN + f"[LOGS] Loaded {extensions}")
 
             except Exception as e:
-                print(f"Failed to load {extensions}")
-                print(f"{type(e).__name__}: {e}")
+                print(Fore.RED + Back.BLACK + f"Failed to load {extensions}")
+                print(Fore.RED + Back.BLACK + f"{type(e).__name__}: {e}")
