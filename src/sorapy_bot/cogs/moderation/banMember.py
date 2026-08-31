@@ -7,7 +7,7 @@ class BanMember(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member=None, reason=None):
+    async def ban(self, ctx, member=discord.Member, * , reason: str = "Rule breaker"):
         
         if member.startswith("<@") and member.endswith(">"):
             member_id = member.replace("<@", "").replace("<@!", "").replace(">", "")
@@ -24,10 +24,6 @@ class BanMember(commands.Cog):
             member_id = int(member_id)
 
             target = ctx.guild.get_member(member_id)
-
-            if target == None:
-                await ctx.send("Member is not found")
-                return
 
             if target.top_role >= ctx.guild.me.top_role:
                 await ctx.send("The user's role is higher than mine, please place me on top of that role")
@@ -48,10 +44,16 @@ class BanMember(commands.Cog):
 
     @ban.error
     async def moderation_error(self, ctx, error):
-        if isinstance(error, commands.MemberNotFound):
-            await ctx.send("Member is not found")
-        else:
-            await ctx.send(f"Unexpected Error {error}")
+        match error:
+            case commands.MissingPermissions():
+                await ctx.send("You need the permission of `BanMembers`.")
+            case commands.BotMissingPermissions():
+                await ctx.send("Cannot ban member. You need a permission of ban for me")
+            case commands.MissingRequiredArgument():
+                await ctx.send("!ban <MEMBER> <REASON>")
+            case commands.MemberNotFound():
+                await ctx.send("Member not found")
+            
 
 async def setup(client):
     await client.add_cog(BanMember(client))
